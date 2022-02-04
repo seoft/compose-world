@@ -72,6 +72,8 @@ fun FakeTextField(
         ),
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
+        singleLine = true,
+        maxLines = 1,
         modifier = modifier
             .width(0.dp)
             .height(0.dp)

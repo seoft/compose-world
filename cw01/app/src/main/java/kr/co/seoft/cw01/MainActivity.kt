@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
-import kr.co.seoft.cw01.compose.FakeTextFieldExample
+import kr.co.seoft.cw01.compose.UnderLineTextExample
 import kr.co.seoft.cw01.ui.theme.Composeworld01Theme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +20,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    FakeTextFieldExample()
+//                    FakeTextFieldExample()
+                    UnderLineTextExample()
                 }
             }
         }
