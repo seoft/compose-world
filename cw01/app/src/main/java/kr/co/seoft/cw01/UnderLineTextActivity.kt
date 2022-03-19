@@ -1,19 +1,16 @@
 package kr.co.seoft.cw01
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kr.co.seoft.cw01.compose.RouterScreen
+import kr.co.seoft.cw01.compose.UnderLineTextExample
 import kr.co.seoft.cw01.ui.theme.Composeworld01Theme
 
-class MainActivity : ComponentActivity() {
+class UnderLineTextActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -23,23 +20,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MainActivityScreen(this)
+                    UnderLineTextExample()
                 }
             }
         }
-        this.startActivity(Intent(this, WorkSpaceActivity::class.java))
     }
-}
-
-@Composable
-private fun MainActivityScreen(context: Context) {
-    RouterScreen(onSelect = {
-        when (it) {
-            0 -> context.startActivity(Intent(context, WorkSpaceActivity::class.java))
-            1 -> context.startActivity(Intent(context, LegacyActivity::class.java))
-            2 -> context.startActivity(Intent(context, UnderLineTextActivity::class.java))
-            3 -> {
-            }
-        }
-    })
 }
