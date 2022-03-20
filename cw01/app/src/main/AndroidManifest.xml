@@ -14,8 +14,8 @@
         >
         <activity
             android:name=".LegacyActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             />
         <activity
             android:name=".UnderLineTextActivity"
@@ -24,6 +24,7 @@
         <activity
             android:name=".WorkSpaceActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             />
         <activity
             android:name=".MainActivity"
