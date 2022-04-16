@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import kotlinx.coroutines.GlobalScope
 import kr.co.seoft.cw01.R
 import kr.co.seoft.cw01.ui.theme.Composeworld01Theme
 import kr.co.seoft.cw01.utils.e
@@ -41,20 +42,34 @@ import kotlin.math.roundToInt
 @Preview(showBackground = true, widthDp = 360, heightDp = 800)
 @Composable
 fun ChatBottomLayoutPreview() {
+    val tester = HorizontalWaveTester()
     Composeworld01Theme {
-
         // * ChatBottomLayout 채팅 페이지 내 하단 가변 UI 레이아웃을 포함한 full 레이아웃
         ChatBottomLayoutContainer(
             Modifier.fillMaxSize(),
+            ratios = tester.gaugeState.collectAsState().value,
+            text = tester.timeState.collectAsState().value,
             onImageClick = {},
             onCameraClick = {},
             onSendClick = {},
             onAudioRecordEvent = {
                 when (it) {
-                    AudioRecordEvent.START -> "START".e()
-                    AudioRecordEvent.SEND -> "SEND".e()
-                    AudioRecordEvent.CANCEL -> "CANCEL".e()
-                    AudioRecordEvent.TOO_SHORT_TO_FAIL -> "TOO_SHORT_TO_FAIL".e()
+                    AudioRecordEvent.START -> {
+                        tester.startFlow(GlobalScope)
+                        "START".e()
+                    }
+                    AudioRecordEvent.SEND -> {
+                        tester.stopFlow()
+                        "SEND".e()
+                    }
+                    AudioRecordEvent.CANCEL -> {
+                        tester.stopFlow()
+                        "CANCEL".e()
+                    }
+                    AudioRecordEvent.TOO_SHORT_TO_FAIL -> {
+                        tester.stopFlow()
+                        "TOO_SHORT_TO_FAIL".e()
+                    }
                 }
             }
         )
@@ -64,6 +79,8 @@ fun ChatBottomLayoutPreview() {
 @Composable
 fun ChatBottomLayoutContainer(
     modifier: Modifier,
+    ratios: List<Float>,
+    text: String,
     onImageClick: () -> Unit,
     onCameraClick: () -> Unit,
     onSendClick: () -> Unit,
@@ -83,7 +100,9 @@ fun ChatBottomLayoutContainer(
             modifier = Modifier.align(Alignment.BottomCenter),
             recordLayoutShowState = recordLayoutShowState,
             recordViewBottomMargin = recordViewBottomMargin,
-            recordViewBottomMargin == recordViewMaxBottomMargin
+            inCancelBoundary = recordViewBottomMargin == recordViewMaxBottomMargin,
+            ratios = ratios,
+            text = text
         )
 
         ChatBottomLayout(
@@ -130,7 +149,9 @@ fun ChatRecordLayout(
     modifier: Modifier,
     recordLayoutShowState: Boolean,
     recordViewBottomMargin: Int,
-    inCancelBoundary: Boolean
+    inCancelBoundary: Boolean,
+    ratios: List<Float>,
+    text: String
 ) {
     Box(modifier = modifier.height(268.dp)) {
         if (recordLayoutShowState) {
@@ -148,12 +169,13 @@ fun ChatRecordLayout(
             visible = recordLayoutShowState,
             enter = slideInVertically(initialOffsetY = { 300 })
         ) {
-            Box(
+            HorizontalWaveLayout(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = recordViewBottomMargin.dp)
-                    .size(136.dp, 54.dp)
-                    .background(if (inCancelBoundary) Color.Red else Color.Black)
+                    .background(if (inCancelBoundary) Color.Red else Color.Black),
+                ratios = ratios,
+                text = text
             )
         }
     }
