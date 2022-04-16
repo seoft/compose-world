@@ -1,6 +1,9 @@
 package kr.co.seoft.cw01.compose
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -29,6 +32,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import kr.co.seoft.cw01.R
 import kr.co.seoft.cw01.ui.theme.Composeworld01Theme
+import kr.co.seoft.cw01.utils.e
 import java.lang.Integer.max
 import java.lang.Integer.min
 import java.util.*
@@ -38,12 +42,21 @@ import kotlin.math.roundToInt
 @Composable
 fun ChatBottomLayoutPreview() {
     Composeworld01Theme {
+
+        // * ChatBottomLayout 채팅 페이지 내 하단 가변 UI 레이아웃을 포함한 full 레이아웃
         ChatBottomLayoutContainer(
-            modifier = Modifier.fillMaxSize(),
+            Modifier.fillMaxSize(),
             onImageClick = {},
             onCameraClick = {},
             onSendClick = {},
-            onAudioRecordEvent = {},
+            onAudioRecordEvent = {
+                when (it) {
+                    AudioRecordEvent.START -> "START".e()
+                    AudioRecordEvent.SEND -> "SEND".e()
+                    AudioRecordEvent.CANCEL -> "CANCEL".e()
+                    AudioRecordEvent.TOO_SHORT_TO_FAIL -> "TOO_SHORT_TO_FAIL".e()
+                }
+            }
         )
     }
 }
@@ -65,6 +78,14 @@ fun ChatBottomLayoutContainer(
     var recordViewBottomMargin by remember { mutableStateOf(recordViewMinBottomMargin) }
 
     Box(modifier = modifier.fillMaxSize()) {
+
+        ChatRecordLayout(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            recordLayoutShowState = recordLayoutShowState,
+            recordViewBottomMargin = recordViewBottomMargin,
+            recordViewBottomMargin == recordViewMaxBottomMargin
+        )
+
         ChatBottomLayout(
             Modifier.align(Alignment.BottomCenter),
             onImageClick = onImageClick,
@@ -100,38 +121,41 @@ fun ChatBottomLayoutContainer(
                 }
             }
         )
-        if (recordLayoutShowState) {
-            ChatRecordLayout(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                recordViewBottomMargin = recordViewBottomMargin,
-                recordViewBottomMargin == recordViewMaxBottomMargin
-            )
-        }
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ChatRecordLayout(modifier: Modifier, recordViewBottomMargin: Int, inCancelBoundary: Boolean) {
-    Box(
-        modifier = modifier
-            .height(268.dp)
-            .background(Color(0x33123123))
-    ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(bottom = 220.dp)
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(Color.Gray)
-        )
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = recordViewBottomMargin.dp)
-                .size(136.dp, 54.dp)
-                .background(if (inCancelBoundary) Color.Red else Color.Black)
-        )
+fun ChatRecordLayout(
+    modifier: Modifier,
+    recordLayoutShowState: Boolean,
+    recordViewBottomMargin: Int,
+    inCancelBoundary: Boolean
+) {
+    Box(modifier = modifier.height(268.dp)) {
+        if (recordLayoutShowState) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(bottom = 220.dp)
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(Color.Gray)
+            )
+        }
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            visible = recordLayoutShowState,
+            enter = slideInVertically(initialOffsetY = { 300 })
+        ) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = recordViewBottomMargin.dp)
+                    .size(136.dp, 54.dp)
+                    .background(if (inCancelBoundary) Color.Red else Color.Black)
+            )
+        }
     }
 }
 
